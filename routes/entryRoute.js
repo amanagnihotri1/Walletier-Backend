@@ -1,0 +1,15 @@
+const express=require("express");
+const {getMonthlyIncomeData,deleteEntry,particularMonthData,getExpenseGraphData}=require("../controllers/MonthlyData");
+const lastyearData=require("../controllers/YearlyData.js");
+const {addEntry,getDailyData,getcurrDayData,getDailyExpense}=require("../controllers/dailyData");
+const entryRoute=express.Router();
+entryRoute.post("/addentry",addEntry);
+entryRoute.get("/currdayentries",getcurrDayData);
+entryRoute.get("/getdailydata",getDailyData);
+entryRoute.get("/:userId/getDailyExpense",getDailyExpense);
+entryRoute.get("/lastMonthData",getMonthlyIncomeData);
+entryRoute.get("/particularMonthData",particularMonthData);
+entryRoute.get("/lastYearData",lastyearData);
+entryRoute.delete("/deleteEntry",deleteEntry);
+entryRoute.get("/getGraphData",getExpenseGraphData);
+module.exports=entryRoute;

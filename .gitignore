@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+
+# Compiled binary addons (if any)
+build/Release
+
+# Logs
+logs
+*.log
+
+# Debugging files
+debug.log
+debug/
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# Environment variables file
+.env
