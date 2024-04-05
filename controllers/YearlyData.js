@@ -9,7 +9,6 @@ const lastyearData=async(req,res,next)=>
         date:{$gte:dateObj},
         userId:userid
     }).sort({date:-1});
-    console.log(data);
     res.status(200).send(data);
   }catch(err)
   {

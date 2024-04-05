@@ -6,7 +6,6 @@ const addEntry=async(req,res,next)=>
    {
       const {userId,amount,category,date,entryType,monthlyGoal}=req.body;
       const newEntry=await entries.create(req.body);
-      console.log(newEntry);
       res.status(201).json(newEntry);
 }catch(err){
    next(err);
@@ -55,10 +54,19 @@ const getcurrDayData=async(req,res,next)=>
       const data=await entries.aggregate([{
         $match:{date:{$gte:startOfDay(dayObj)},userId:userid} 
       }]);
-      console.log(data);
       res.send(data);
    }catch(err){
       next(err);
    }
 }
-module.exports={getDailyData,addEntry,getcurrDayData,getDailyExpense};
+const updateEntry=async(req,res,next)=>
+{
+   try{
+     const{entryId,entryCat,entryAmt,entryType}=req.query;
+     const data=await entries.findByIdAndUpdate(entryId,{amount:entryAmt,category:entryCat,entryType}).save();
+     return res.status(200).json(data);
+   }catch(err){
+      next(err);
+   }
+}
+module.exports={getDailyData,addEntry,getcurrDayData,getDailyExpense,updateEntry};

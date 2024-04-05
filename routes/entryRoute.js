@@ -1,7 +1,7 @@
 const express=require("express");
 const {getMonthlyIncomeData,deleteEntry,particularMonthData,getExpenseGraphData}=require("../controllers/MonthlyData");
 const lastyearData=require("../controllers/YearlyData.js");
-const {addEntry,getDailyData,getcurrDayData,getDailyExpense}=require("../controllers/dailyData");
+const {addEntry,getDailyData,getcurrDayData,getDailyExpense, updateEntry}=require("../controllers/dailyData");
 const entryRoute=express.Router();
 entryRoute.post("/addentry",addEntry);
 entryRoute.get("/currdayentries",getcurrDayData);
@@ -12,4 +12,5 @@ entryRoute.get("/particularMonthData",particularMonthData);
 entryRoute.get("/lastYearData",lastyearData);
 entryRoute.delete("/deleteEntry",deleteEntry);
 entryRoute.get("/getGraphData",getExpenseGraphData);
+entryRoute.patch("/updateEntry",updateEntry);
 module.exports=entryRoute;
