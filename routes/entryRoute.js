@@ -12,5 +12,5 @@ entryRoute.get("/particularMonthData",particularMonthData);
 entryRoute.get("/lastYearData",lastyearData);
 entryRoute.delete("/deleteEntry",deleteEntry);
 entryRoute.get("/getGraphData",getExpenseGraphData);
-entryRoute.patch("/updateEntry",updateEntry);
+entryRoute.patch("/editEntry",updateEntry);
 module.exports=entryRoute;

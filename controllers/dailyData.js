@@ -62,7 +62,7 @@ const getcurrDayData=async(req,res,next)=>
 const updateEntry=async(req,res,next)=>
 {
    try{
-     const{entryId,entryCat,entryAmt,entryType}=req.query;
+     const{entryId,entryCat,entryAmt,entryType}=req.body;
      const data=await entries.findByIdAndUpdate(entryId,{amount:entryAmt,category:entryCat,entryType}).save();
      return res.status(200).json(data);
    }catch(err){
