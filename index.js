@@ -1,8 +1,8 @@
 require("dotenv").config();
+const apicache=require("apicache");
 const express=require("express");
 const connectDB = require("./dbConfig");
 const cors=require("cors");
-const apicache=require("apichache");
 const entryRoute = require("./routes/entryRoute");
 const app=express();
 let cache=apicache.middleware;
