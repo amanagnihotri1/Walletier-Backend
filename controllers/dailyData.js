@@ -70,4 +70,5 @@ const updateEntry=async(req,res,next)=>
       next(err);
    }
 }
+
 module.exports={getDailyData,addEntry,getcurrDayData,getDailyExpense,updateEntry};
