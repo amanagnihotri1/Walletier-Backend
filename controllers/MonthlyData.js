@@ -54,7 +54,7 @@ const deleteEntry=async(req,res,next)=>
 {
   try{
     const {entryId}=req.query;
-    const data=await entries.deleteOne({id:{$eq:entryId}});
+    const data=await entries.deleteOne({id:entryId});
     res.json({data,message:`deleted entry with Id ${entryId}`});
   }catch(err){
     next(err);
