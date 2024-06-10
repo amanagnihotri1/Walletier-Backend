@@ -8,7 +8,7 @@
 This is a web server built using ExpressJS Framework, designed to help users manage their expenses effectively. It provides users with a convenient way to track their spending habits and income entries, categorize expenses,track savings and visualize their financial data through interactive graphs.
 
 ## Demo 
-[!(https://tenor.com/en-GB/view/button-mouse-press-me-gif-13668673)](https://expensetracker-cd16f.web.app/login)
+[](https://tenor.com/en-GB/view/button-mouse-press-me-gif-13668673)
 
 ## Features
 - **CRUD Operation:** Create,update,delete and Read details for every income or expense done by user.
