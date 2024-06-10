@@ -2,8 +2,7 @@ const entries=require("../models/entrySchema");
 const{parse, startOfDay,endOfDay,utcToZonedTime}=require("date-fns");
 const addEntry=async(req,res,next)=>
 { 
-   try
-   {
+try{
       const {userId,amount,category,date,entryType,monthlyGoal}=req.body;
       const newEntry=await entries.create(req.body);
       res.status(201).json(newEntry);
