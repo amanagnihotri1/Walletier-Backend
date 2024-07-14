@@ -24,7 +24,7 @@ userId:{
 },
 monthlyGoal:{
  type:Number,  
- min:0, 
+ min:0 
 }
 },{timestamps:true});
 module.exports=mongoose.model("entry",entrySchema);

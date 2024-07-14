@@ -5,14 +5,14 @@ const addEntry=async(req,res,next)=>
 try{
       const {userId,amount,category,date,entryType,monthlyGoal}=req.body;
       const newEntry=await entries.create(req.body);
-      res.status(201).json(newEntry);
+      res.status(201).json({message:"new entry created successfully",newEntry});
 }catch(err){
    next(err);
 }
 }
 const getDailyData=async(req,res,next)=>
 { 
-   try{
+   try{ 
       const{uid}=req.query;
       dateObj=parse(new Date().toString(),"MM/dd/yyyy",new Date());
       const result=await entries.aggregate([{

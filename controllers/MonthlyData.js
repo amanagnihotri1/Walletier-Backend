@@ -7,7 +7,7 @@ const getMonthlyIncomeData=async(req,res,next)=>
         const{dateVal,uid}=req.query;
         const dateObj=parse(dateVal,'MM/dd/yyyy',new Date());
         const data=await entries.find({date:{$gte:dateObj},userId:uid}).sort({'date':-1});
-        res.send(data);
+        res.json({message:"success",data:data});
     }catch(err)
     {
         next(err);
@@ -28,7 +28,6 @@ const particularMonthData=async(req,res,next)=>
       },
     }
   ]);
-  console.log(data[0]);
     res.status(200).json(data);
   }catch(err)
   {
