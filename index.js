@@ -6,7 +6,7 @@ const cors=require("cors");
 const entryRoute = require("./routes/entryRoute");
 const app=express();
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 let cache=apicache.middleware;
