@@ -1,21 +1,22 @@
 require("dotenv").config();
-const apicache=require("apicache");
 const express=require("express");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./dbConfig");
+const {login}=require("./controllers/authController");
 const cors=require("cors");
 const entryRoute = require("./routes/entryRoute");
 const app=express();
-const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-};
-let cache=apicache.middleware;
-app.use(cache('30 minutes'));
-app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ['GET','POST','DELETE', 'PUT','OPTIONS'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 connectDB();
-app.use("/api",entryRoute);
+app.use("/api",require("./routes/entryRoute"));
+app.use("/api/auth",require("./routes/userRoute"));
 app.listen(process.env.PORT,(err)=>
     {
      if(err)
@@ -26,4 +27,4 @@ app.listen(process.env.PORT,(err)=>
      {
         console.log("server running successfully at port",process.env.PORT);
 }
-    })
+  })

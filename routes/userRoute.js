@@ -1,0 +1,10 @@
+const express=require("express");
+const{userLogin,signup,logout}=require("../controllers/authController");
+const userRoute=express.Router();
+const {passwordReset,passwordRequest}=require("../controllers/authController");
+userRoute.post("/login",userLogin);
+userRoute.post("/signup",signup);
+userRoute.get("/logout",logout);
+userRoute.post("/passwordreset",passwordReset);
+userRoute.post('/passwordrequest',passwordRequest);
+module.exports=userRoute;

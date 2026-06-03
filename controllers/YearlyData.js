@@ -1,18 +1,20 @@
 const{sub}=require("date-fns");
-const entries=require("../models/entrySchema");
-const lastyearData=async(req,res,next)=>
+const Entry=require("../models/Entry");
+const lastyearData=async(req,res)=>
 {
   try{
-    const{userid}=req.query;
+    const{useremail}=req.query;
     const dateObj=sub(new Date(),{years:1});
-    const data=await entries.find({
+    console.log(useremail,dateObj);
+    const data=await Entry.find({
         date:{$gte:dateObj},
-        userId:userid
-    }).sort({date:-1});
+        useremail
+    }).sort({'date':-1});
+    console.log(data);
     res.status(200).send(data);
   }catch(err)
   {
-    next(err);
+    res.status(500).json({message:err});
   }
 }
 module.exports=lastyearData;

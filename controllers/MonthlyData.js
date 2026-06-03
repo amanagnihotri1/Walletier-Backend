@@ -1,62 +1,81 @@
-const entries=require("../models/entrySchema");
+const Entry=require("../models/Entry");
 const{sub, startOfMonth, endOfMonth}=require("date-fns");
 const {format,parse}=require("date-fns");
-const getMonthlyIncomeData=async(req,res,next)=>
+const getMonthlyIncomeData=async(req,res)=>
 {
     try{
-        const{dateVal,uid}=req.query;
+        const{dateVal,useremail}=req.query;
         const dateObj=parse(dateVal,'MM/dd/yyyy',new Date());
-        const data=await entries.find({date:{$gte:dateObj},userId:uid}).sort({'date':-1});
-        res.json({message:"success",data:data});
+        const data=await Entry.find({date:{$gte:dateObj},email:useremail}).sort({'date':-1});
+        res.status(200).send(data);
     }catch(err)
     {
-        next(err);
+      res.status(500).json({message:err});
     }
 }
-const particularMonthData=async(req,res,next)=>
+const particularMonthData=async(req,res)=>
 {
   try{
-     const{dateVal,uid}=req.query;
+     const{dateVal,useremail}=req.query;
      let dateObj=parse(dateVal,"MM/dd/yyyy",new Date());
-    const data=await entries.aggregate([{
-     $match:{date:{$gte:startOfMonth(dateObj),$lte:endOfMonth(dateObj)},userId:uid}
+    const aggregateData=await Entry.aggregate([{
+     $match:{date:{$gte:startOfMonth(dateObj),$lte:endOfMonth(dateObj)},useremail}
     },
     {
       $group:{
        _id:'$entryType',
        totalSum:{$sum:'$amount'},
       },
-    }
+    },
+     {
+    $sort: { _id: 1 } 
+  }
   ]);
-    res.status(200).json(data);
+     const data = {
+      Expense: 0,   
+      Income:  0 
+    };
+
+    aggregateData.map(item => {
+      data[item._id] = item.totalSum;
+    });
+    res.status(200).send(data);
   }catch(err)
   {
-    next(err);
+    res.status(500).json({message:err});
   }
 }
-const getExpenseGraphData=async(req,res,next)=>{
+const getExpenseGraphData=async(req,res)=>{
   try{
-    const {uid}=req.query;
-    const reqData=await entries.find({
-    date:{
+    const {useremail}=req.query;
+    const reqData=await Entry.aggregate([{
+      $match:{date:{
       $gte:startOfMonth(new Date()),
       $lte:new Date()},
-    userId:uid,
+    useremail,
     entryType:"Expense"
-    });
-    res.send(reqData);
+    },
+  },
+{
+  $group:{
+    _id:'$category',
+    totalSum:{$sum:"$amount"}
+
+  }
+}]);
+    res.status(200).send(reqData);
   }catch(err){
-   next(err);
+    res.status(500).json({message:err.message});
   }
 }
-const deleteEntry=async(req,res,next)=>
+const deleteEntry=async(req,res)=>
 {
   try{
     const {entryId}=req.query;
-    const data=await entries.deleteOne({id:entryId});
+    const data=await Entry.deleteOne({id:entryId});
     res.json({data,message:`deleted entry with Id ${entryId}`});
   }catch(err){
-    next(err);
+    res.status(500).json({message:err});
   }
 
 }

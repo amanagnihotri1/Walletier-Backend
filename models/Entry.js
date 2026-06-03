@@ -1,5 +1,6 @@
 const { randomUUID } = require("crypto");
 const mongoose=require("mongoose");
+const { types } = require("util");
 const {Schema}=mongoose;
 const entrySchema=new Schema({
 amount:{
@@ -18,13 +19,14 @@ entryType:{
     type:String,
     required:true
 },
-userId:{
+useremail:{
     type:String,
-    required:true
+    required:true,
+    unique:true
 },
 monthlyGoal:{
- type:Number,  
- min:0 
-}
+    type:Number,
+    default:0
+},
 },{timestamps:true});
 module.exports=mongoose.model("entry",entrySchema);
