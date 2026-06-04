@@ -18,7 +18,7 @@ const validateSession = (req, res, next) => {
     next();
 
   } catch (err) {
-      return res.status(401).json({ error:err.message });
+       res.status(401).json({ error:err.message });
     }
 };
 module.exports={validateSession};
