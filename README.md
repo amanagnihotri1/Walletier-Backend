@@ -87,11 +87,3 @@ Start the server
 
 - [@amanagnihotri1](https://www.github.com/amanagnihotri1)
 
-
-## Screenshots
-
-![](https://ibb.co/n0s2s5x)
-![](https://ibb.co/fHXc0nF)
-![](https://ibb.co/cLyKnT0)
-![](https://ibb.co/Wz0bTsY)
-
