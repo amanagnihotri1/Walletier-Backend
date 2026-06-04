@@ -7,7 +7,7 @@ const validateSession = (req, res, next) => {
 
   // Check if Authorization header exists and starts with "Bearer"
   if (!token) {
-    res.status(401).json({ error: "No token provided" });
+   return res.status(401).json({ error: "No token provided" });
   }
   try {
     // Verify + decode in one step — throws if expired or tampered
@@ -18,7 +18,7 @@ const validateSession = (req, res, next) => {
     next();
 
   } catch (err) {
-       res.status(401).json({ error:err.message });
+      return res.status(401).json({ error:err.message });
     }
 };
 module.exports={validateSession};
