@@ -105,7 +105,7 @@ try{
      res.status(401).json({status:"Failed",message:"Incorrect password"});
   }
      const token = await jwt.sign({ _id: findUser[0]._id },process.env.SESSION_SECRET,{ expiresIn: "24h" });
-            res.cookie("token",token, {httpOnly: true,secure:true, sameSite: 'lax'  }).send({ token,userDetails:findUser[0]});
+            res.cookie("token",token, {httpOnly: true,secure:true, sameSite: 'None'  }).send({ token,userDetails:findUser[0]});
 }
 catch(err){
   return res.json({status:err.statusCode,message:err.message});
