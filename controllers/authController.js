@@ -31,7 +31,6 @@ const jwt=require("jsonwebtoken");
 
     res.status(200).json({ message: 'Password has been reset' });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
@@ -101,15 +100,12 @@ try{
  if(!findUser){
    res.status(404).json({status:"Sucess",message:"User does not exist with this email address"});
  }
- console.log("104",findUser)
- console.log("105",userPass,findUser[0].password);
   const matchPassword=await bcrypt.compare(userPass,findUser[0].password);
   if(!matchPassword){
      res.status(401).json({status:"Failed",message:"Incorrect password"});
   }
      const token = await jwt.sign({ _id: findUser[0]._id },process.env.SESSION_SECRET,{ expiresIn: "24h" });
-            res.cookie("token",token, {httpOnly: true,secure:true }).send({ token,userDetails:findUser[0]});
-            console.log("112",cookie);
+            res.cookie("token",token, {httpOnly: true,secure:true, sameSite: 'lax'  }).send({ token,userDetails:findUser[0]});
 }
 catch(err){
   return res.json({status:err.statusCode,message:err.message});

@@ -2,6 +2,7 @@ require("dotenv").config();
 const jwt=require("jsonwebtoken");
 const cookie=require("cookie-parser");
 const validateSession = (req, res, next) => {
+  console.log(req);
   const token = req.cookies?.token;
   if (!token) {
     return res.status(401).json({ error: "No token provided" });

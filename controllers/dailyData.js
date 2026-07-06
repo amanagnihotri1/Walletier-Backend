@@ -3,7 +3,6 @@ const{parse,startOfDay,endOfDay,utcToZonedTime}=require("date-fns");
 const addEntry=async(req,res)=> // Function to add Expense/Income entries
 { 
 try{
-   console.log(req.body);
       const {useremail,amount,category,date,entryType}=req.body;
       const newEntry=await new Entry({
          useremail,
