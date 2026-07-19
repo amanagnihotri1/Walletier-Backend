@@ -19,4 +19,11 @@ const validateSession = (req, res, next) => {
     return res.status(401).json({ error: "Invalid token" });
   }
 };
-module.exports={validateSession};
+const errorHandler=(err, req, res, next) => {
+ console.error(err.stack);
+  res.status(err.status || 500).json({
+    status: 'error',
+    message: err.message || 'Server Error'
+  });
+}
+module.exports={validateSession, errorHandler};
