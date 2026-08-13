@@ -1,6 +1,6 @@
 require("dotenv").config();
-const compression = require('compression')
-const helmet = require('helmet')
+const compression = require('compression');
+const helmet = require('helmet');
 const { errorHandler } = require("./helper/utils");
 const{rateLimit, MINUTE}=require("express-rate-limit");
 require('dotenv').config();
@@ -16,13 +16,13 @@ const limiter = rateLimit({
 	standardHeaders: 'draft-8', 
 	legacyHeaders: false, 
 	ipv6Subnet: 56, 
-})
-app.use(limiter)
+});
+app.use(limiter);
 app.use(compression());
 app.use(helmet());
 app.use(cookieParser());
 app.use(cors({
-  origin: ["http://localhost:3000", "https://walletier-0243.web.app"],
+  origin: ["http://localhost:3000", "https://walletier-0243.web.app", "https://walletier-0243.firebaseapp.com/"],
   methods: ['GET','POST','DELETE', 'PUT','OPTIONS'],
   credentials: true
 }));
