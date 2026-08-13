@@ -1,6 +1,7 @@
 require("dotenv").config();
 const compression = require('compression')
 const helmet = require('helmet')
+const { errorHandler } = require("./helper/utils");
 const{rateLimit, MINUTE}=require("express-rate-limit");
 require('dotenv').config();
 const express=require("express");
