@@ -3,7 +3,8 @@ const bcrypt=require("bcrypt");
 const cookie=require("cookie-parser");
 const User=require("../models/User");
 const jwt=require("jsonwebtoken");
- const passwordReset = async (req, res, next) => {
+const nodemailer=require("nodemailer");
+ const passwordReset = async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
   try {
@@ -25,8 +26,6 @@ const jwt=require("jsonwebtoken");
         },
       }
     );
-
-
     await user.save();
 
     res.status(200).json({ message: 'Password has been reset' });
@@ -38,21 +37,28 @@ const passwordRequest=async(req,res)=>{
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User doesn't exist" });
+    if (!user) 
+    {
+      return res.status(404).json({ message: "User doesn't exist" });
+    }
+    console.log("im here");
     const secret = process.env.SESSION_SECRET + user.password;
-    const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '1h' });
-    const resetURL = `${process.env.PROD_URL}`;
+    console.log(secret);
+    const token = await jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '1h' });
+    const resetURL = `${process.env.PROD_URL}/${user._id}/${token}`;
+    console.log(resetURL);
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 't1129172@gmail.com',
-        pass: 'password',
+        user: `${process.env.NODEMAIL_EMAIL}`,
+        pass: `${process.env.NODEMAIL_PASS}`,
+        secure:false,
       },
     });
 
     const mailOptions = {
       to: user.email,
-      from: process.env.EMAIL,
+      from: `${process.env.NODEMAIL_EMAIL}`,
       subject: 'Password Reset Request',
       text: `You are receiving this because you have requested the reset of the password for your account.\n\n
       Please click on the following link, or paste this into your browser to complete the process:\n\n
@@ -60,8 +66,8 @@ const passwordRequest=async(req,res)=>{
       If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
 
-    await transporter.sendMail(mailOptions);
-
+   await transporter.sendMail(mailOptions);
+    console.log( 'Password mail chala gyaa');
     res.status(200).json({ message: 'Password reset link sent' });
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });

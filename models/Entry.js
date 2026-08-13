@@ -22,7 +22,6 @@ entryType:{
 useremail:{
     type:String,
     required:true,
-    unique:true
 },
 monthlyGoal:{
     type:Number,

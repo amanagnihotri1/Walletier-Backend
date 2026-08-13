@@ -1,10 +1,9 @@
-require("dotenv").config();
+require('dotenv').config();
 const express=require("express");
-const cookieParser = require("cookie-parser");
-const connectDB = require("./dbConfig");
-const {login}=require("./controllers/authController");
+const cookieParser=require("cookie-parser");
+const connectDB=require("./dbConfig");
+const {login}=require("./controllers/auth");
 const cors=require("cors");
-const entryRoute = require("./routes/entryRoute");
 const app=express();
 app.use(cookieParser());
 app.use(cors({
