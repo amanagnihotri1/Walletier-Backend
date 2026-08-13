@@ -1,10 +1,24 @@
-const passport=require("passport");
 const bcrypt=require("bcrypt");
 const cookie=require("cookie-parser");
+const nodemailer=require("nodemailer");
 const User=require("../models/User");
 const jwt=require("jsonwebtoken");
-const nodemailer=require("nodemailer");
- const passwordReset = async (req, res) => {
+const transporter = nodemailer.createTransport({
+  service: "Gmail", // Use any Service ID from the table below (matching is case-insensitive)
+  auth: {
+    user: process.env.NODEMAIL_EMAIL,
+    pass: process.env.NODEMAIL_PASS,
+    secure: false, // Use SSL
+  },
+});
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Email error:", error.message);
+  } else {
+    console.log("Email server ready");
+  }
+});
+ const passwordReset = async (req, res, next) => {
   const { id, token } = req.params;
   const { password } = req.body;
   try {
@@ -35,30 +49,24 @@ const nodemailer=require("nodemailer");
 };
 const passwordRequest=async(req,res)=>{
   const { email } = req.body;
+  console.log(email);
   try {
     const user = await User.findOne({ email });
-    if (!user) 
-    {
-      return res.status(404).json({ message: "User doesn't exist" });
-    }
-    console.log("im here");
+    if (!user) return res.status(404).json({ message: "User doesn't exist" });
     const secret = process.env.SESSION_SECRET + user.password;
-    console.log(secret);
-    const token = await jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '1h' });
-    const resetURL = `${process.env.PROD_URL}/${user._id}/${token}`;
-    console.log(resetURL);
+    const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: '1h' });
+    const resetURL = `${process.env.PROD_URL}`;
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: `${process.env.NODEMAIL_EMAIL}`,
-        pass: `${process.env.NODEMAIL_PASS}`,
-        secure:false,
+        user: 't1129172@gmail.com',
+        pass: 'password',
       },
     });
 
     const mailOptions = {
       to: user.email,
-      from: `${process.env.NODEMAIL_EMAIL}`,
+      from: process.env.EMAIL,
       subject: 'Password Reset Request',
       text: `You are receiving this because you have requested the reset of the password for your account.\n\n
       Please click on the following link, or paste this into your browser to complete the process:\n\n
@@ -66,11 +74,11 @@ const passwordRequest=async(req,res)=>{
       If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
 
-   await transporter.sendMail(mailOptions);
-    console.log( 'Password mail chala gyaa');
+    await transporter.sendMail(mailOptions);
+
     res.status(200).json({ message: 'Password reset link sent' });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong' });
+    res.status(500).json({ message: error.message });
   }
 }; 
 const signup=async(req,res)=>{ 
