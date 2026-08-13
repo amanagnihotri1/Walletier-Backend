@@ -22,7 +22,7 @@ app.use(compression());
 app.use(helmet());
 app.use(cookieParser());
 app.use(cors({
-  origin: ["http://localhost:3000", "https://walletier-0243.web.app", "https://walletier-0243.firebaseapp.com/"],
+  origin: ["http://localhost:3000", "https://walletier-0243.web.app", "https://walletier-0243.firebaseapp.com"],
   methods: ['GET','POST','DELETE', 'PUT','OPTIONS'],
   credentials: true
 }));
