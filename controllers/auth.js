@@ -3,12 +3,13 @@ const cookie=require("cookie-parser");
 const nodemailer=require("nodemailer");
 const User=require("../models/User");
 const jwt=require("jsonwebtoken");
-const transporter = nodemailer.createTransport({
-  service: "Gmail", // Use any Service ID from the table below (matching is case-insensitive)
+const transporter = nodemailer.createTransport({  //Nodemail configuraation for sending emails
+  service: "Gmail", 
   auth: {
+    secure: false,
+    family: 4, 
     user: process.env.NODEMAIL_EMAIL,
     pass: process.env.NODEMAIL_PASS,
-    secure: false, // Use SSL
   },
 });
 transporter.verify((error, success) => {

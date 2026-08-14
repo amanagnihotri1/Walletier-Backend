@@ -12,7 +12,7 @@ const app=express();
 app.set('trust proxy', 1);
 const limiter = rateLimit({
 	windowMs: 15000, 
-	limit: 100, 
+	limit: 1500, 
 	standardHeaders: 'draft-8', 
 	legacyHeaders: false, 
 	ipv6Subnet: 56, 
