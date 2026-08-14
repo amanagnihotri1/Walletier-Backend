@@ -16,7 +16,6 @@ const limiter = rateLimit({
 	standardHeaders: 'draft-8', 
 	legacyHeaders: false, 
 	ipv6Subnet: 56, 
-  trustProxy: true,
 });
 app.use(limiter);
 app.use(compression());
