@@ -5,9 +5,9 @@ const User=require("../models/User");
 const jwt=require("jsonwebtoken");
 const transporter = nodemailer.createTransport({  //Nodemail configuraation for sending emails
   service: "Gmail", 
+  secure: false,
+  family: 4, 
   auth: {
-    secure: false,
-    family: 4, 
     user: process.env.NODEMAIL_EMAIL,
     pass: process.env.NODEMAIL_PASS,
   },
