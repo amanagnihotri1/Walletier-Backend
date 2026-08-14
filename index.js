@@ -3,13 +3,13 @@ const compression = require('compression');
 const helmet = require('helmet');
 const { errorHandler } = require("./helper/utils");
 const{rateLimit, MINUTE}=require("express-rate-limit");
-require('dotenv').config();
 const express=require("express");
 const cookieParser=require("cookie-parser");
 const connectDB=require("./dbConfig");
 const {login}=require("./controllers/auth");
 const cors=require("cors");
 const app=express();
+app.set('trust proxy', 1);
 const limiter = rateLimit({
 	windowMs: 15000, 
 	limit: 100, 
