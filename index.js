@@ -16,6 +16,7 @@ const limiter = rateLimit({
 	standardHeaders: 'draft-8', 
 	legacyHeaders: false, 
 	ipv6Subnet: 56, 
+  trustProxy: true,
 });
 app.use(limiter);
 app.use(compression());
@@ -27,10 +28,12 @@ app.use(cors({
   credentials: true
 }));
 app.use(errorHandler);
-
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 connectDB();
+app.get("/health", (req, res) => {
+ res.status(200).json({success:true,message:"server is running fine",timestamp:new Date().toISOString()});
+});
 app.use("/api",require("./routes/entryRoute"));
 app.use("/api/auth",require("./routes/userRoute"));
 app.listen(process.env.PORT || 3000,(err)=>
