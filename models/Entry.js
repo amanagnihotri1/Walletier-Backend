@@ -1,6 +1,4 @@
-const { randomUUID } = require("crypto");
 const mongoose=require("mongoose");
-const { types } = require("util");
 const {Schema}=mongoose;
 const entrySchema=new Schema({
 amount:{
@@ -9,7 +7,8 @@ amount:{
 },
 category:{
     type:String,
-    required:true
+    required:true,
+    enum:["Travel","Business","Investements","Extra income","Deposits","Gifts","Miscellaneous","Bills","Shopping","Food","Entertainement","Daily Needs","Others"]
 },
 date:{
     type:Date,
@@ -17,10 +16,12 @@ date:{
 },
 entryType:{
     type:String,
+    enum:["Expense","Income"],
     required:true
 },
-useremail:{
-    type:String,
+userId:{
+    type:Schema.Types.ObjectId,
+    ref:"User",
     required:true,
 },
 monthlyGoal:{

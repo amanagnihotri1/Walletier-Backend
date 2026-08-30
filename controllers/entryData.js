@@ -1,140 +1,238 @@
-const Entry=require("../models/Entry");
-const{sub, startOfMonth, endOfMonth,startOfDay,endOfDay,utcToZonedTime,format,parse}=require("date-fns");
-const getMonthlyIncomeData=async(req,res)=>
-{
-    try{
-        const{dateVal,useremail}=req.query;
-        const dateObj=parse(dateVal,'MM/dd/yyyy',new Date());
-        const data=await Entry.find({date:{$gte:dateObj},email:useremail}).sort({'date':-1});
-        res.status(200).send(data);
-    }catch(err)
-    {
-      res.status(500).json({message:err});
+const mongoose = require("mongoose");
+const Entry = require("../models/Entry");
+const User = require("../models/User");
+const {resolveUserId}=require("../helper/utils");
+const {
+  sub,
+  startOfMonth,
+  endOfMonth,
+  startOfDay,
+  endOfDay,
+  parse,
+} = require("date-fns");
+
+const getMonthlyIncomeData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
     }
-}
-const particularMonthData=async(req,res)=>
-{
-  try{
-     const{dateVal,useremail}=req.query;
-     let dateObj=parse(dateVal,"MM/dd/yyyy",new Date());
-    const aggregateData=await Entry.aggregate([{
-     $match:{date:{$gte:startOfMonth(dateObj),$lte:endOfMonth(dateObj)},useremail}
-    },
-    {
-      $group:{
-       _id:'$entryType',
-       totalSum:{$sum:'$amount'},
-      },
-    },
-     {
-    $sort: { _id: 1 } 
+
+    const { dateVal } = req.query;
+    let dateObj;
+    if (dateVal) {
+      dateObj = parse(dateVal, "MM/dd/yyyy", new Date());
+      if (isNaN(dateObj)) dateObj = new Date(dateVal);
+    } else {
+      dateObj = startOfMonth(new Date());
+    }
+
+    const data = await Entry.find({
+      userId: toObjectId(userId),
+      date: { $gte: dateObj },
+    }).sort({ date: -1 });
+
+    return res.status(200).send(data);
+  } catch (err) {
+    console.error("Error in getMonthlyIncomeData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch monthly income data" });
   }
-  ]);
-     const data = {
-      Expense: 0,   
-      Income:  0 
+};
+
+const particularMonthData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const { dateVal } = req.query;
+    let dateObj = new Date();
+    if (dateVal) {
+      const parsed = parse(dateVal, "MM/dd/yyyy", new Date());
+      dateObj = isNaN(parsed) ? new Date(dateVal) : parsed;
+    }
+
+    const aggregateData = await Entry.aggregate([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          date: { $gte: startOfMonth(dateObj), $lte: endOfMonth(dateObj) },
+        },
+      },
+      {
+        $group: {
+          _id: "$entryType",
+          totalSum: { $sum: "$amount" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    const data = {
+      Expense: 0,
+      Income: 0,
     };
 
-    aggregateData.map(item => {
+    aggregateData.forEach((item) => {
       data[item._id] = item.totalSum;
     });
-    res.status(200).send(data);
-  }catch(err)
-  {
-    res.status(500).json({message:err});
-  }
-}
-const getExpenseGraphData=async(req,res)=>{
-  try{
-    const {useremail}=req.query;
-    const reqData=await Entry.aggregate([{
-      $match:{date:{
-      $gte:startOfMonth(new Date()),
-      $lte:new Date()},
-    useremail,
-    entryType:"Expense"
-    },
-  },
-{
-  $group:{
-    _id:'$category',
-    totalSum:{$sum:"$amount"}
 
+    return res.status(200).send(data);
+  } catch (err) {
+    console.error("Error in particularMonthData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch month data" });
   }
-}]);
-    res.status(200).send(reqData);
-  }catch(err){
-    res.status(500).json({message:err.message});
-  }
-}
+};
 
-const lastyearData=async(req,res)=>
-{
-  try{
-    const{useremail}=req.query;
-    const dateObj=sub(new Date(),{years:1});
-    const data=await Entry.find({
-        date:{$gte:dateObj},
-        useremail
-    }).sort({'date':-1});
-    res.status(200).send(data);
-  }catch(err)
-  {
-    res.status(500).json({message:err});
-  }
-}
-const getDailyData=async(req,res)=> //Function to display entries for current day
-{ 
-   try{ 
-      const{useremail}=req.query;
-      const result=await Entry.aggregate([{
-        $match:{
-           useremail,
-           date:{$lte:endOfDay(Date.now()),$gte:startOfDay(Date.now())}
-         }
+const getExpenseGraphData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const reqData = await Entry.aggregate([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          date: {
+            $gte: startOfMonth(new Date()),
+            $lte: new Date(),
+          },
+          entryType: "Expense",
+        },
       },
-         {   $group:{
-              _id:'$entryType',
-              totalSum:{$sum:'$amount'} 
-            }, 
-         }
-         ]);
-         const data = {
-      Expense: 0,   // default 0 if no expense entries
-      Income:  0    // default 0 if no income entries
+      {
+        $group: {
+          _id: "$category",
+          totalSum: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    return res.status(200).send(reqData);
+  } catch (err) {
+    console.error("Error in getExpenseGraphData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch expense graph data" });
+  }
+};
+
+const lastyearData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const dateObj = sub(new Date(), { years: 1 });
+    const data = await Entry.find({
+      userId: toObjectId(userId),
+      date: { $gte: dateObj },
+    }).sort({ date: -1 });
+
+    return res.status(200).send(data);
+  } catch (err) {
+    console.error("Error in lastyearData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch last year data" });
+  }
+};
+
+const getDailyData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const result = await Entry.aggregate([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) },
+        },
+      },
+      {
+        $group: {
+          _id: "$entryType",
+          totalSum: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const data = {
+      Expense: 0,
+      Income: 0,
     };
 
-    result.map(item => {
+    result.forEach((item) => {
       data[item._id] = item.totalSum;
     });
-      res.status(200).json(data);
-   }catch(err)
-   {
-      res.status(500).json({message:err.message});
-   }
-}
-const getDailyExpense=async(req,res)=> //Function to display daily expense 
-{ 
-   try{
-      const{entryType,useremail}=req.query;
-      const result=await Entry.find({useremail,entryType,date:new Date()});
-     res.status(200).json(result);
-   }catch(err)
-   {
-      res.status(500).json({message:err});
-   }
-}
-const getcurrDayData=async(req,res)=>
-{
-   try{
-      const{useremail}=req.query;
-      let dayObj=startOfDay(new Date());
-      const data=await Entry.aggregate([{
-        $match:{date:{$gte:startOfDay(dayObj)},useremail} 
-      }]);
-      res.status(200).send(data);
-   }catch(err){
-      res.status(500).json({message:err});
-   }
-}
-module.exports={getMonthlyIncomeData,particularMonthData,getExpenseGraphData,lastyearData,getDailyData,getDailyExpense,getcurrDayData};
+
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error("Error in getDailyData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch daily data" });
+  }
+};
+
+const getDailyExpense = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const { entryType } = req.query;
+    const filter = {
+      userId: toObjectId(userId),
+      date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) },
+    };
+
+    if (entryType) {
+      filter.entryType = entryType;
+    }
+
+    const result = await Entry.find(filter).sort({ date: -1 });
+    return res.status(200).json(result);
+  } catch (err) {
+    console.error("Error in getDailyExpense:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch daily expense" });
+  }
+};
+
+const getcurrDayData = async (req, res) => {
+  try {
+    const userId = await resolveUserId(req);
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    const dayObj = startOfDay(new Date());
+    const data = await Entry.aggregate([
+      {
+        $match: {
+          userId: toObjectId(userId),
+          date: { $gte: dayObj, $lte: endOfDay(dayObj) },
+        },
+      },
+    ]);
+
+    return res.status(200).send(data);
+  } catch (err) {
+    console.error("Error in getcurrDayData:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to fetch current day data" });
+  }
+};
+
+module.exports = {
+  getMonthlyIncomeData,
+  particularMonthData,
+  getExpenseGraphData,
+  lastyearData,
+  getDailyData,
+  getDailyExpense,
+  getcurrDayData,
+};

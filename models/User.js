@@ -20,6 +20,17 @@ avatar: {
 google:{
     id:String,
     token:String,
+},
+gender:{
+    type:String,
+    enum:["Male","Female"]
+},
+occupation:{
+    type:String,
+    enum:["Employed","Unemployed","Student"],
+},
+Income:{
+    type:Number
 }
 },{timestamps:true});
 module.exports=mongoose.model("User",UserSchema);
