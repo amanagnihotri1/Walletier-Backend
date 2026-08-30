@@ -56,7 +56,7 @@ const particularMonthData = async (req, res) => {
     const aggregateData = await Entry.aggregate([
       {
         $match: {
-          userId: toObjectId(userId),
+          userId,
           date: { $gte: startOfMonth(dateObj), $lte: endOfMonth(dateObj) },
         },
       },
