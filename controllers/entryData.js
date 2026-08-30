@@ -28,7 +28,7 @@ const getMonthlyIncomeData = async (req, res) => {
     }
 
     const data = await Entry.find({
-      userId: toObjectId(userId),
+      userId,
       date: { $gte: dateObj },
     }).sort({ date: -1 });
 
@@ -97,7 +97,7 @@ const getExpenseGraphData = async (req, res) => {
     const reqData = await Entry.aggregate([
       {
         $match: {
-          userId: toObjectId(userId),
+          userId,
           date: {
             $gte: startOfMonth(new Date()),
             $lte: new Date(),
@@ -129,7 +129,7 @@ const lastyearData = async (req, res) => {
 
     const dateObj = sub(new Date(), { years: 1 });
     const data = await Entry.find({
-      userId: toObjectId(userId),
+      userId,
       date: { $gte: dateObj },
     }).sort({ date: -1 });
 
@@ -150,7 +150,7 @@ const getDailyData = async (req, res) => {
     const result = await Entry.aggregate([
       {
         $match: {
-          userId: toObjectId(userId),
+          userId,
           date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) },
         },
       },
@@ -187,7 +187,7 @@ const getDailyExpense = async (req, res) => {
 
     const { entryType } = req.query;
     const filter = {
-      userId: toObjectId(userId),
+      userId,
       date: { $gte: startOfDay(new Date()), $lte: endOfDay(new Date()) },
     };
 
@@ -214,7 +214,7 @@ const getcurrDayData = async (req, res) => {
     const data = await Entry.aggregate([
       {
         $match: {
-          userId: toObjectId(userId),
+          userId,
           date: { $gte: dayObj, $lte: endOfDay(dayObj) },
         },
       },
