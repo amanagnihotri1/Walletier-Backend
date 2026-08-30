@@ -1,6 +1,5 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-
 const validateToken = (req, res, next) => {
   let token = req.cookies?.token;
 

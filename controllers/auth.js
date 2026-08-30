@@ -25,9 +25,8 @@ const passwordRequest = async (req, res) => {
     );
 
     // Build reset URL using CLIENT_URL / PROD_URL or host
-    const clientBaseUrl = process.env.CLIENT_URL || process.env.PROD_URL || `${req.protocol}://${req.get("host")}`;
-    const resetURL = `${clientBaseUrl.replace(/\/$/, "")}/passwordreset/${user._id}/${token}`;
-
+    const clientBaseUrl = `${process.env.CLIENT_URL}`;
+    const resetURL = `${clientBaseUrl}/passwordreset/${user._id}/${token}`;
     await sendPasswordResetEmail({
       email: user.email,
       name: user.fullName || "User",
@@ -177,5 +176,4 @@ module.exports = {
   logout,
   passwordReset,
   passwordRequest,
-  verifyResetToken,
 };
